@@ -6,14 +6,14 @@ import {
 } from "@blockstack/clarity";
 import { assert } from "chai";
 
-describe("payroll contract test suite", () => {
+describe("payroll contract unit test suite", () => {
   let payrollClient: Client;
   let provider: Provider;
 
   before(async () => {
     provider = await ProviderRegistry.createProvider();
     payrollClient = new Client(
-      "SP3GWX3NE58KXHESRYE4DYQ1S31PQJTCRXB3PE9SB.payroll",
+      "ST3PT63RKC10QYE20XDNPD01JVNG27QZ0D5D9N0V1.payroll",
       "payroll",
       provider
     );
@@ -28,22 +28,13 @@ describe("payroll contract test suite", () => {
       await payrollClient.deployContract();
     });
 
-    it("should return 'payroll'", async () => {
+    it("should return current funds", async () => {
       const query = payrollClient.createQuery({
-        method: { name: "say-hi", args: [] },
+        method: { name: "get-current-funds", args: [] },
       });
       const receipt = await payrollClient.submitQuery(query);
-      const result = Result.unwrapString(receipt);
-      assert.equal(result, "payroll");
-    });
-
-    it("should echo number", async () => {
-      const query = payrollClient.createQuery({
-        method: { name: "echo-number", args: ["123"] },
-      });
-      const receipt = await payrollClient.submitQuery(query);
-      const result = Result.unwrapInt(receipt);
-      assert.equal(result, 123);
+      const result = Result.unwrapUInt(receipt);
+      assert.equal(result, 0);
     });
   });
 
